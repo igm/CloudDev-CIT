@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html>
 <body>
-	<h1>Todo Application (Model 2)</h1>
+	<h1>Todo Application (Spring MVC)</h1>
 	<h2>Todo list:</h2>
 	<c:forEach items="${todos}" var="todo" varStatus="row">
 	${row.count} - ${todo.text} - ${todo.done}
