@@ -1,7 +1,7 @@
 package ie.cit.cad.web;
 
 import ie.cit.cad.Todo;
-import ie.cit.cad.TodoRepository;
+import ie.cit.cad.data.dao.TodoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +18,7 @@ public class TodoController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String todoList(Model model) {
-		model.addAttribute("todos", repo.getTodos());
+		model.addAttribute("todos", repo.getAll());
 		return "todos";
 	}
 
@@ -26,23 +26,24 @@ public class TodoController {
 	public String create(@RequestParam String text, Model model) {
 		Todo todo = new Todo();
 		todo.setText(text);
-		repo.getTodos().add(todo);
-		model.addAttribute("todos", repo.getTodos());
+		repo.add(todo);
+		model.addAttribute("todos", repo.getAll());
 		return "todos";
 	}
 
 	@RequestMapping(method = RequestMethod.PUT)
-	public String update(@RequestParam("todoId") int id, Model model) {
-		Todo todo = repo.getTodos().get(id - 1);
+	public String update(@RequestParam("todoId") String id, Model model) {
+		Todo todo = repo.findById(id);
 		todo.setDone(!todo.isDone());
-		model.addAttribute("todos", repo.getTodos());
+		repo.update(todo);
+		model.addAttribute("todos", repo.getAll());
 		return "todos";
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE)
-	public String delete(@RequestParam("todoId") int id, Model model) {
-		repo.getTodos().remove(id - 1);
-		model.addAttribute("todos", repo.getTodos());
+	public String delete(@RequestParam("todoId") String id, Model model) {
+		repo.delete(id);
+		model.addAttribute("todos", repo.getAll());
 		return "todo";
 	}
 }
