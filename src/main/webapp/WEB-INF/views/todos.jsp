@@ -6,15 +6,15 @@
 	<h1>Todo Application (Spring MVC)</h1>
 	<h2>Todo list:</h2>
 	<c:forEach items="${todos}" var="todo" varStatus="row">
-	${row.count} - ${todo.text} - ${todo.done}
+	${todo.id} - ${todo.text} - ${todo.done}
 		<form method="post">
 			<input name="_method" value="delete" type="hidden">
-			<input name="todoId" value="${row.count}" type="hidden">
+			<input name="todoId" value="${todo.id}" type="hidden">
 			<input type="submit" value="Delete">
 		</form>
 		<form method="post">
 			<input name="_method" value="put" type="hidden">
-			<input name="todoId" value="${row.count}" type="hidden">
+			<input name="todoId" value="${todo.id}" type="hidden">
 			<input type="submit" value="Update">
 		</form>
 	</c:forEach>
