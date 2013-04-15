@@ -44,6 +44,6 @@ public class TodoController {
 	public String delete(@RequestParam("todoId") String id, Model model) {
 		repo.delete(id);
 		model.addAttribute("todos", repo.getAll());
-		return "todo";
+		return "todos";
 	}
 }

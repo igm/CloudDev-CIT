@@ -24,19 +24,23 @@ public class JdbcTodoRepository implements TodoRepository {
 	}
 
 	public Todo findById(String id) {
-		return null;
+		return jdbcTemplate.queryForObject(
+				"SELECT ID, TEXT, DONE FROM TODO WHERE ID=?",
+				new TodoRowMapper(), id);
 	}
 
 	public void add(Todo todo) {
-
+		jdbcTemplate.update("INSERT INTO TODO VALUES(?,?,?)", todo.getId(),
+				todo.getText(), todo.isDone());
 	}
 
 	public void delete(String id) {
-
+		jdbcTemplate.update("DELETE FROM TODO WHERE ID=?", id);
 	}
 
 	public void update(Todo todo) {
-
+		jdbcTemplate.update("UPDATE TODO SET TEXT=?, DONE=? WHERE ID=?",
+				todo.getText(), todo.isDone(), todo.getId());
 	}
 }
 
