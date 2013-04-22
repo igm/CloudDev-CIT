@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:cloud="http://schema.cloudfoundry.org/spring"
 	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://schema.cloudfoundry.org/spring http://schema.cloudfoundry.org/spring/cloudfoundry-spring.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
@@ -12,33 +16,38 @@
 		<constructor-arg ref="dataSource" />
 	</bean>
 
-	<jdbc:embedded-database id="dataSource" type="H2">
-		<jdbc:script location="classpath:db-schema.sql" />
-	</jdbc:embedded-database>
 
-	<bean class="org.h2.tools.Server" factory-method="createWebServer"
-		init-method="start" lazy-init="false">
-		<constructor-arg value="-web,-webPort,8082" />
-	</bean>
 
 	<aop:aspectj-autoproxy />
 
 	<bean class="ie.cit.cad.aspects.TracingAspect" />
 
-<!-- 	<security:http auto-config="true">
-		<security:intercept-url pattern="/*.html"
-			access="ROLE_USER" />
-	</security:http>
- -->
- 
- 	<security:http auto-config="true"/>
- 	<security:global-method-security secured-annotations="enabled"/>
- 	
+	<!-- <security:http auto-config="true"> <security:intercept-url pattern="/*.html" 
+		access="ROLE_USER" /> </security:http> -->
+
+	<security:http auto-config="true" />
+	<security:global-method-security
+		secured-annotations="enabled" />
+
 	<security:authentication-manager>
 		<security:authentication-provider>
 			<security:password-encoder hash="md5" />
 			<security:user-service properties="classpath:user.properties" />
 		</security:authentication-provider>
 	</security:authentication-manager>
+
+	<beans profile="default">
+		<jdbc:embedded-database id="dataSource" type="H2">
+			<jdbc:script location="classpath:db-schema.sql" />
+		</jdbc:embedded-database>
+
+		<bean class="org.h2.tools.Server" factory-method="createWebServer"
+			init-method="start" lazy-init="false">
+			<constructor-arg value="-web,-webPort,8082" />
+		</bean>
+	</beans>
+	<beans profile="cloud">
+		<cloud:data-source id="dataSource" service-name="tododb"/>
+	</beans>
 
 </beans>
