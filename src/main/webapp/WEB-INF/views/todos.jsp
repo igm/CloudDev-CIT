@@ -1,9 +1,11 @@
 <%@page import="ie.cit.cad.Todo" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <html>
 <body>
 	<h1>Todo Application (Spring MVC)</h1>
+	<a href="j_spring_security_logout">Logout: <security:authentication property="principal.username"/> </a>
 	<h2>Todo list:</h2>
 	<c:forEach items="${todos}" var="todo" varStatus="row">
 	${todo.id} - ${todo.text} - ${todo.done}

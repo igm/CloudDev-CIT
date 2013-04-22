@@ -10,7 +10,10 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+@Secured("ROLE_USER")
 public class JdbcTodoRepository implements TodoRepository {
 
 	private JdbcTemplate jdbcTemplate;
@@ -20,7 +23,11 @@ public class JdbcTodoRepository implements TodoRepository {
 	}
 
 	public List<Todo> getAll() {
-		return jdbcTemplate.query("SELECT * FROM TODO", new TodoRowMapper());
+		return jdbcTemplate.query("SELECT * FROM TODO WHERE OWNER=?", new TodoRowMapper(), getCurrentUser());
+	}
+
+	private String getCurrentUser() {
+		return SecurityContextHolder.getContext().getAuthentication().getName();
 	}
 
 	public Todo findById(String id) {
@@ -30,12 +37,12 @@ public class JdbcTodoRepository implements TodoRepository {
 	}
 
 	public void add(Todo todo) {
-		jdbcTemplate.update("INSERT INTO TODO VALUES(?,?,?)", todo.getId(),
-				todo.getText(), todo.isDone());
+		jdbcTemplate.update("INSERT INTO TODO VALUES(?,?,?,?)", todo.getId(),
+				todo.getText(), getCurrentUser(), todo.isDone());
 	}
 
 	public void delete(String id) {
-		jdbcTemplate.update("DELETE FROM TODO WHERE ID=?", id);
+		jdbcTemplate.update("DELETE FROM TODO WHERE ID=? AND OWNER=?", id, getCurrentUser());
 	}
 
 	public void update(Todo todo) {
