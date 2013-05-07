@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,6 +36,7 @@ public class RestController {
 		return repo.getAll();
 	}
 
+	// curl -X GET -i http://localhost:8080/todo-app/api/todo/{id}
 	@RequestMapping(value = "todo/{id}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
@@ -42,6 +44,7 @@ public class RestController {
 		return repo.findById(id);
 	}
 
+	// curl -X POST -i http://localhost:8080/todo-app/api/todo?text=TodoItem1
 	@RequestMapping(value = "todo", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
@@ -55,6 +58,21 @@ public class RestController {
 		UriTemplate uriTemplate = new UriTemplate(url.toString());
 		URI locationURL = uriTemplate.expand(todo.getId());
 		res.addHeader("Location", locationURL.toASCIIString());
+	}
+
+	// curl -X DELETE -i http://localhost:8080/todo-app/api/todo/{id}
+	@RequestMapping(value = "todo/{id}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(@PathVariable String id) {
+		repo.delete(id);
+	}
+
+	// curl -X PUT -i http://localhost:8080/todo-app/api/todo/{id} -H "Content-Type: application/json" -d '{"text":"TODO Item Text","done":true}'
+	@RequestMapping(value = "todo/{id}", method = RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void update(@PathVariable String id, @RequestBody Todo todo) {
+		todo.setId(id);
+		repo.update(todo);
 	}
 
 	@ExceptionHandler(EmptyResultDataAccessException.class)
