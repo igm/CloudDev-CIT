@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class TodoController {
 	@Autowired
-	private TodoRepository repo;
+	TodoRepository repo;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String todoList(Model model) {
